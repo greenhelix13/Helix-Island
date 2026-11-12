@@ -46,7 +46,7 @@ fun CardsScreen(onBack: () -> Unit, onInstruction: () -> Unit) {
             GroupToggle(Pos.Last, Icons.Rounded.Call, tr("Звонок идёт", "Call in progress"),
                 tr("Время разговора в капсуле", "The call time in the capsule"),
                 s.cardCallActive, color = Tile.Green) { set { copy(cardCallActive = it) } }
-
+        }
         SectionHeader(tr("Таймеры и будильник", "Timers and alarm"))
         Group {
             GroupToggle(Pos.First, Icons.Rounded.HourglassEmpty, tr("Таймер и секундомер", "Timer and stopwatch"),
