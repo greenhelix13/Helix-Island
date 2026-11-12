@@ -203,7 +203,7 @@ fun IslandOverlay(
         .map { NavScreen.merge(it, screenNav[it.pkg]) }
         .let { list -> list + screenNav.values.filter { sn -> sn.distance != null && list.none { it.pkg == sn.pkg } }.map(NavScreen::synthetic) }
 
-    val call = if (!s.cardCall) null else {
+        val call = run {
         val tel = calls[CallMonitor.KEY]
         val fromApp = calls.filterKeys { it != CallMonitor.KEY }.values.maxByOrNull { it.postTime }
         when {
