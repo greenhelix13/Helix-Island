@@ -216,7 +216,7 @@ fun IslandOverlay(
                 avatar = fromApp.avatar ?: tel.avatar,
             )
         }
-    }
+        }?.takeIf { if (it.incoming) s.cardCall else s.cardCallActive }
     // Смахнутый входящий не показываем, пока звонит (сбрасывает служба, когда звонить перестали)
     val callHidden by IslandBus.callHidden.collectAsState()
     val acts = buildList {
