@@ -40,10 +40,12 @@ fun CardsScreen(onBack: () -> Unit, onInstruction: () -> Unit) {
             GroupToggle(Pos.First, Icons.Outlined.PlayCircle, tr("Управление проигрывателем", "Player controls"),
                 tr("Когда играет музыка и плеер свёрнут", "When music is playing and the player is in the background"),
                 s.cardMedia, color = Tile.Pink) { set { copy(cardMedia = it) } }
-            GroupToggle(Pos.Last, Icons.Rounded.Call, tr("Звонки", "Calls"),
-                tr("Входящий вызов с кнопками ответа и время разговора", "Incoming calls with answer buttons, and the call time"),
+                     GroupToggle(Pos.Middle, Icons.Rounded.Call, tr("Входящие звонки", "Incoming calls"),
+                tr("Карточка с кнопками ответа и отбоя", "Card with answer and decline buttons"),
                 s.cardCall, color = Tile.Green) { set { copy(cardCall = it) } }
-        }
+            GroupToggle(Pos.Last, Icons.Rounded.Call, tr("Звонок идёт", "Call in progress"),
+                tr("Время разговора в капсуле", "The call time in the capsule"),
+                s.cardCallActive, color = Tile.Green) { set { copy(cardCallActive = it) } }
 
         SectionHeader(tr("Таймеры и будильник", "Timers and alarm"))
         Group {
