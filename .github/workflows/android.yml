@@ -67,6 +67,13 @@ jobs:
       - name: Сборка
         run: ./gradlew --no-daemon assembleRelease
 
+      - name: Debug APK
+        run: ./gradlew --no-daemon assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HelixIsland-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
       # Подпись — отдельным шагом: ключ из секретов есть только здесь и сразу удаляется
       - name: Подпись
         id: sign
