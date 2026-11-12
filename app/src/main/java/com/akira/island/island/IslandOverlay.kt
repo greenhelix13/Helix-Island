@@ -375,7 +375,13 @@ private fun IslandRow(
                 val p = measurable.measure(constraints)
                 layout(p.width, p.height) {
                     val room = ((constraints.maxWidth - p.width) / 2).coerceAtLeast(0)
-                    p.place(s.offsetX.dp.roundToPx().coerceIn(-room, room), 0)
+                    // Толщина «Размера с активностью» растёт от центра: капсула поднимается на половину прибавки.
+                    // Когда остров выше обычной активной капсулы (плашки, раскрытие), подъём плавно сходит на нет
+                    val idleH = (s.height + ISLAND_PAD_DP * 2).dp.roundToPx()
+                    val extra = s.activeExtra.dp.roundToPx()
+                    val grown = (p.height - idleH).coerceAtLeast(0)
+                    val lift = if (s.notch) 0 else if (grown <= extra) grown / 2 else (2 * extra - grown).coerceAtLeast(0) / 2
+                    p.place(s.offsetX.dp.roundToPx().coerceIn(-room, room), -lift)
                 }
             }
             .wrapContentSize(Alignment.TopCenter, unbounded = true)
