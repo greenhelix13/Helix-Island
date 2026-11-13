@@ -150,6 +150,7 @@ fun IslandOverlay(
     val notice by IslandBus.notice.collectAsState()
     val battery by IslandBus.battery.collectAsState()
     val foreground by IslandBus.foregroundPackage.collectAsState()
+    val ownPkg = LocalContext.current.packageName
     val expanded by IslandBus.expanded.collectAsState()
     val focus by IslandBus.focus.collectAsState()
     val calibrating by IslandBus.calibrating.collectAsState()
