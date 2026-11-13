@@ -95,6 +95,7 @@ object LiveParser {
     /** Показать широкую плашку, но не чаще раза в минуту для одного приложения. */
     fun postBanner(context: Context, l: LiveInfo) {
         if (!SettingsRepo.current.cardLive) return
+        if (SettingsRepo.current.hideWhenPlayerOpen && l.pkg != context.packageName && IslandBus.foregroundPackage.value == l.pkg) return
         val now = SystemClock.elapsedRealtime()
         if (now - (lastBanner[l.pkg] ?: -120_000L) < 60_000) return
         lastBanner[l.pkg] = now
