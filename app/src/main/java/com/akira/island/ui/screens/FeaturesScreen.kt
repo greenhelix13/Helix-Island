@@ -174,8 +174,8 @@ fun BehaviorScreen(onBack: () -> Unit) {
             GroupToggle(Pos.Middle, Icons.Rounded.ScreenRotation, tr("Скрывать в альбомной ориентации", "Hide in landscape"),
                 tr("Не мешает играм и видео", "Stays out of games and videos"),
                 s.hideInLandscape, color = Tile.Gray) { v -> SettingsRepo.update { copy(hideInLandscape = v) } }
-            GroupToggle(Pos.Last, Icons.Rounded.Apps, tr("Прятать плеер в его приложении", "Hide the player in its own app"),
-                tr("Карточка музыки не показывается, пока открыт сам плеер", "The music card hides while the player itself is open"),
+            GroupToggle(Pos.Last, Icons.Rounded.Apps, tr("Прятать карточки в их приложении", "Hide cards in their own app"),
+                tr("Музыка, навигация, загрузки и таймеры не показываются, пока открыто само приложение", "Music, navigation, downloads and timers hide while their own app is open"),
                 s.hideWhenPlayerOpen, color = Tile.Blue) { v -> SettingsRepo.update { copy(hideWhenPlayerOpen = v) } }
         }
 
