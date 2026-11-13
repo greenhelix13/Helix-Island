@@ -233,12 +233,12 @@ fun IslandOverlay(
         if (call != null && !call.incoming) persistent += Act.CallA(call)
         if (torch.on && s.cardTorch) persistent += Act.TorchA(torch)
         if (t != null && !t.ringing) persistent += Act.TimerA(t)
-                if (s.cardLive) liveActive.filter { it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.LiveA(it) }
+        if (s.cardLive) liveActive.filter { !s.hideWhenPlayerOpen || it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.LiveA(it) }
         stopwatch?.let { persistent += Act.StopwatchA(it) }
-        if (s.cardTimer) chronoActive.filter { it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.ChronoA(it) }
+        if (s.cardTimer) chronoActive.filter { !s.hideWhenPlayerOpen || it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.ChronoA(it) }
         val m = media
-        if (s.cardMedia && m != null && !(s.hideWhenPlayerOpen && foreground == m.pkg)) persistent += Act.MediaA(m)
-        if (s.cardProgress) progress.values.filter { it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.ProgressA(it) }
+        if (s.cardMedia && m != null && !(s.hideWhenPlayerOpen && foreground == m.pkg)) persistent += Act.MediaA(
+        if (s.cardProgress) progress.values.filter { !s.hideWhenPlayerOpen || it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.ProgressA(it) }
         if (s.cardCharging && battery.charging) persistent += Act.ChargingA(battery)
         // Будильник — тише всех: показывается, только когда больше ничего нет, и не уходит в пузырь
         val alarm = nextAlarm
