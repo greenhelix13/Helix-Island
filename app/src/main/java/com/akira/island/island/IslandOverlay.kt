@@ -145,6 +145,7 @@ fun IslandOverlay(
     val calls by IslandBus.calls.collectAsState()
     val live by IslandBus.live.collectAsState()
     val torch by IslandBus.torch.collectAsState()
+    val hotspot by IslandBus.hotspot.collectAsState()
     val timer by IslandBus.timer.collectAsState()
     val stopwatch by IslandBus.stopwatch.collectAsState()
     val notice by IslandBus.notice.collectAsState()
@@ -240,6 +241,7 @@ fun IslandOverlay(
         if (s.cardMedia && m != null && !(s.hideWhenPlayerOpen && foreground == m.pkg)) persistent += Act.MediaA(m)
         if (s.cardProgress) progress.values.filter { !s.hideWhenPlayerOpen || it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.ProgressA(it) }
         if (s.cardCharging && battery.charging) persistent += Act.ChargingA(battery)
+        if (s.cardHotspot && hotspot.on) persistent += Act.HotspotA(hotspot)
         // Будильник — тише всех: показывается, только когда больше ничего нет, и не уходит в пузырь
         val alarm = nextAlarm
         if (s.cardAlarm && alarm != null && alarm.triggerAt - alarmNow in 1..ALARM_LEAD_MS) persistent += Act.AlarmA(alarm)
@@ -860,6 +862,7 @@ private fun Bubble(act: Act, s: IslandSettings) {
             }
             is Act.StopwatchA -> Icon(Ios.stopwatch, null, tint = Tints.Orange, modifier = Modifier.size(inner * 0.8f))
             is Act.TorchA -> Icon(Ios.flashlight, null, tint = Tints.Yellow, modifier = Modifier.size(inner * 0.75f))
+            is Act.HotspotA -> Icon(Ios.hotspot, null, tint = Tints.Green, modifier = Modifier.size(inner * 0.75f))
             is Act.ChronoA -> AppIcon(act.c.icon, inner, Ios.timer, Tints.Orange)
             is Act.ProgressA -> {
                 ProgressRing(act.p.fraction, Tints.Blue, Modifier.size(inner), stroke = 2.5.dp)
