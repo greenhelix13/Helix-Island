@@ -31,6 +31,7 @@ object Ios {
     val close @Composable get() = ImageVector.vectorResource(R.drawable.ios_close)
     val flash @Composable get() = ImageVector.vectorResource(R.drawable.ios_flash)
     val flashlight @Composable get() = ImageVector.vectorResource(R.drawable.ios_flashlight)
+    val hotspot @Composable get() = ImageVector.vectorResource(R.drawable.ios_hotspot)
     val navigate @Composable get() = ImageVector.vectorResource(R.drawable.ios_navigate)
     val music @Composable get() = ImageVector.vectorResource(R.drawable.ios_musical_notes)
     val moon @Composable get() = ImageVector.vectorResource(R.drawable.ios_moon)
