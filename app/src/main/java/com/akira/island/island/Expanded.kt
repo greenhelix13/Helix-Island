@@ -136,6 +136,7 @@ fun ExpandedContent(act: Act, s: IslandSettings, lyrics: Lyrics?, battery: Batte
             is Act.LiveA -> LiveExpanded(act.l)
             is Act.CallA -> CallExpanded(act.c)
             is Act.AlarmA -> AlarmExpanded(act.a, s)
+            is Act.HotspotA -> HotspotExpanded(act.h)
             else -> IdleExpanded(s, battery)
         }
     }
@@ -663,6 +664,23 @@ private fun ChargingExpanded(b: BatteryInfo) {
         }
         Spacer(Modifier.width(14.dp))
         Text("${b.level}%", color = Tints.Green, fontSize = 26.sp, style = Digits)
+    }
+}
+
+@Composable
+private fun HotspotExpanded(h: HotspotState) {
+    val now = rememberNow(1000)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(52.dp).clip(CircleShape).background(Tints.Green.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
+            Icon(Ios.hotspot, null, tint = Tints.Green, modifier = Modifier.size(26.dp))
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(tr("Точка доступа", "Hotspot"), color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Text(tr("Включена", "On"), color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
+        }
+        Spacer(Modifier.width(14.dp))
+        Text(formatDuration(now - h.since), color = Tints.Green, fontSize = 26.sp, style = Digits)
     }
 }
 
