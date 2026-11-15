@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import com.akira.island.core.BatteryInfo
 import com.akira.island.core.Controls
+import com.akira.island.core.HotspotState
 import com.akira.island.core.IslandBus
 import com.akira.island.core.Notice
 import com.akira.island.core.NoticeStyle
