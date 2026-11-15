@@ -153,6 +153,8 @@ data class LiveInfo(
     val expiresAt: Long = 0,
 )
 
+/** Точка доступа: включена ли и когда включилась (elapsedRealtime) */
+data class HotspotState(val on: Boolean = false, val since: Long = 0L)
 data class TorchState(
     val on: Boolean = false,
     val cameraId: String? = null,
@@ -273,6 +275,8 @@ data class Notice(
     val alarm: AlarmInfo? = null,
     /** Новая версия для плашки NoticeStyle.UPDATE; null — уже обновились */
     val update: com.akira.island.update.Release? = null,
+        /** Зелёное свечение внутри капсулы снизу — «Точка доступа включена» */
+    val glow: Boolean = false,
     val id: Long = ids.incrementAndGet(),
 ) {
     private companion object {
