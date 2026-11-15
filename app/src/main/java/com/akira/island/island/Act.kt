@@ -4,6 +4,7 @@ import com.akira.island.core.AlarmInfo
 import com.akira.island.core.BatteryInfo
 import com.akira.island.core.CallInfo
 import com.akira.island.core.ChronoInfo
+import com.akira.island.core.HotspotState
 import com.akira.island.core.LiveInfo
 import com.akira.island.core.MediaInfo
 import com.akira.island.core.Notice
