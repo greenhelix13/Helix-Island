@@ -22,6 +22,7 @@ import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
@@ -37,6 +38,8 @@ import com.akira.island.core.tr
 import com.akira.island.data.SettingsRepo
 import com.akira.island.island.Ios
 import kotlin.math.abs
+import java.net.Inet4Address
+import java.net.NetworkInterface
 
 /** Системные события, которые остров показывает короткими уведомлениями. */
 class SystemEvents(private val context: Context) {
@@ -64,6 +67,60 @@ class SystemEvents(private val context: Context) {
 
     private fun notice(enabled: Boolean, n: Notice) {
         if (enabled && !warmingUp) IslandBus.post(n)
+    }
+        // Точка доступа считается включённой, если её видит хотя бы один из трёх источников:
+    // сообщение Wi‑Fi, сообщение о режиме модема и поиск сетевого интерфейса точки доступа
+    private var apOn = false
+    private var tetherOn = false
+    private var ifaceOn = false
+    private var lastIfaceLog = ""
+
+    private fun isWifiTetherName(n: String): Boolean {
+        val name = n.lowercase()
+        return name.startsWith("ap") || name.startsWith("swlan") || name.startsWith("softap") ||
+            (name.startsWith("wlan") && name != "wlan0")
+    }
+
+    private fun scanHotspotInterface(): Boolean = runCatching {
+        val all = NetworkInterface.getNetworkInterfaces()?.toList().orEmpty()
+        val summary = all.joinToString { ni ->
+            "${ni.name}:${if (ni.isUp) "up" else "down"}:" + ni.inetAddresses.toList().joinToString("/") { a -> a.hostAddress.orEmpty() }
+        }
+        if (summary != lastIfaceLog) {
+            lastIfaceLog = summary
+            Log.d("HotspotDbg", "interfaces: $summary")
+        }
+        all.any { ni ->
+            isWifiTetherName(ni.name) && ni.isUp &&
+                ni.inetAddresses.toList().any { a -> a is Inet4Address && a.isSiteLocalAddress }
+        }
+    }.getOrDefault(false)
+
+    private val hotspotPoll = object : Runnable {
+        override fun run() {
+            ifaceOn = scanHotspotInterface()
+            refreshHotspot()
+            main.postDelayed(this, 4000)
+        }
+    }
+
+    private fun refreshHotspot() {
+        val on = apOn || tetherOn || ifaceOn
+        if (on == IslandBus.hotspot.value.on) return
+        Log.d("HotspotDbg", "hotspot -> $on (ap=$apOn tether=$tetherOn iface=$ifaceOn)")
+        if (on) {
+            IslandBus.hotspot.value = HotspotState(true, SystemClock.elapsedRealtime())
+            notice(
+                s.cardHotspot,
+                Notice(tr("Точка доступа", "Hotspot"), tr("Вкл", "On"), ic(R.drawable.ios_hotspot), Tints.Green, glow = true),
+            )
+        } else {
+            IslandBus.hotspot.value = HotspotState()
+            notice(
+                s.cardHotspot,
+                Notice(tr("Точка доступа", "Hotspot"), tr("Выкл", "Off"), ic(R.drawable.ios_hotspot), Tints.Gray),
+            )
+        }
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -127,6 +184,7 @@ class SystemEvents(private val context: Context) {
             addAction(NotificationManager.ACTION_INTERRUPTION_FILTER_CHANGED)
             addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
             addAction(AP_STATE_CHANGED)
+            addAction(TETHER_STATE_CHANGED)
         }
         ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
 
@@ -147,12 +205,17 @@ class SystemEvents(private val context: Context) {
                 wifiCallback,
             )
         }
+        main.post(hotspotPoll)
     }
 
     fun stop() {
         runCatching { context.unregisterReceiver(receiver) }
         runCatching { context.contentResolver.unregisterContentObserver(brightnessObserver) }
         runCatching { connectivity?.unregisterNetworkCallback(wifiCallback) }
+        main.removeCallbacks(hotspotPoll)
+        apOn = false
+        tetherOn = false
+        ifaceOn = false
         IslandBus.hotspot.value = HotspotState()
     }
 
@@ -212,8 +275,7 @@ class SystemEvents(private val context: Context) {
                         if (on) Tints.Purple else Tints.Gray),
                 )
             }
-
-                       AP_STATE_CHANGED -> {
+                          AP_STATE_CHANGED -> {
                 // Состояния точки доступа: 11 — выключена, 13 — включена (на старых версиях 1 и 3), остальные переходные
                 val state = intent.getIntExtra("wifi_state", 0) % 10
                 val wasOn = IslandBus.hotspot.value.on
@@ -230,7 +292,7 @@ class SystemEvents(private val context: Context) {
                         Notice(tr("Точка доступа", "Hotspot"), tr("Выкл", "Off"), ic(R.drawable.ios_hotspot), Tints.Gray),
                     )
                 }
-            }
+                          }
             Intent.ACTION_AIRPLANE_MODE_CHANGED -> {
                 val on = intent.getBooleanExtra("state", false)
                 if (on) notice(s.evAirplaneOn, Notice(tr("Режим полёта", "Airplane Mode"), tr("Вкл", "On"), ic(R.drawable.ios_airplane), Tints.Orange))
