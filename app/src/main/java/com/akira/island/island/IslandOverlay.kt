@@ -383,7 +383,7 @@ private fun IslandRow(
                     val idleH = (s.height + ISLAND_PAD_DP * 2).dp.roundToPx()
                     val extra = s.activeExtra.dp.roundToPx()
                     val grown = (p.height - idleH).coerceAtLeast(0)
-                    val lift = if (s.notch) 0 else if (grown <= extra) grown / 2 else (2 * extra - grown).coerceAtLeast(0) / 2
+                    val lift = if (s.notch) 0 else grown.coerceAtMost(extra) / 2
                     p.place(s.offsetX.dp.roundToPx().coerceIn(-room, room), -lift)
                 }
             }
