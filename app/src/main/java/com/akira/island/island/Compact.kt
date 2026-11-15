@@ -376,7 +376,15 @@ private fun WideNotice(n: Notice, s: IslandSettings, wideWidth: Dp) {
         else -> n.state ?: n.caption
     }
     Row(
-        Modifier.width(wideWidth).height(height).padding(horizontal = height * 0.32f),
+        Modifier
+            .width(wideWidth)
+            .height(height)
+            .then(
+                if (n.glow) Modifier.drawBehind {
+                    drawRect(Brush.verticalGradient(0.3f to Color.Transparent, 1f to n.tint.copy(alpha = 0.55f * fill.value)))
+                } else Modifier,
+            )
+            .padding(horizontal = height * 0.32f),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
