@@ -151,6 +151,7 @@ class SystemEvents(private val context: Context) {
         runCatching { context.unregisterReceiver(receiver) }
         runCatching { context.contentResolver.unregisterContentObserver(brightnessObserver) }
         runCatching { connectivity?.unregisterNetworkCallback(wifiCallback) }
+        IslandBus.hotspot.value = HotspotState()
     }
 
     private fun handle(intent: Intent, initialSticky: Boolean) {
@@ -210,6 +211,24 @@ class SystemEvents(private val context: Context) {
                 )
             }
 
+                       AP_STATE_CHANGED -> {
+                // Состояния точки доступа: 11 — выключена, 13 — включена (на старых версиях 1 и 3), остальные переходные
+                val state = intent.getIntExtra("wifi_state", 0) % 10
+                val wasOn = IslandBus.hotspot.value.on
+                if (state == 3 && !wasOn) {
+                    IslandBus.hotspot.value = HotspotState(true, SystemClock.elapsedRealtime())
+                    notice(
+                        s.cardHotspot,
+                        Notice(tr("Точка доступа", "Hotspot"), tr("Вкл", "On"), ic(R.drawable.ios_hotspot), Tints.Green, glow = true),
+                    )
+                } else if (state == 1 && wasOn) {
+                    IslandBus.hotspot.value = HotspotState()
+                    notice(
+                        s.cardHotspot,
+                        Notice(tr("Точка доступа", "Hotspot"), tr("Выкл", "Off"), ic(R.drawable.ios_hotspot), Tints.Gray),
+                    )
+                }
+            }
             Intent.ACTION_AIRPLANE_MODE_CHANGED -> {
                 val on = intent.getBooleanExtra("state", false)
                 if (on) notice(s.evAirplaneOn, Notice(tr("Режим полёта", "Airplane Mode"), tr("Вкл", "On"), ic(R.drawable.ios_airplane), Tints.Orange))
@@ -339,5 +358,6 @@ class SystemEvents(private val context: Context) {
         const val BT_BATTERY_CHANGED = "android.bluetooth.device.action.BATTERY_LEVEL_CHANGED"
         const val EXTRA_BT_BATTERY = "android.bluetooth.device.extra.BATTERY_LEVEL"
         const val USB_STATE = "android.hardware.usb.action.USB_STATE"
+        const val AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED" 
     }
 }
