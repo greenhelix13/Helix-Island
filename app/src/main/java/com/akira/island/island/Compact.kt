@@ -66,6 +66,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -218,6 +219,14 @@ fun CompactContent(act: Act, s: IslandSettings, wideWidth: Dp) {
             left = { Icon(Ios.flashlight, null, tint = Tints.Yellow, modifier = Modifier.size(icon)) },
             right = { GlowDot(Tints.Yellow, h * 0.26f, !s.reduceEffects) },
         )
+
+        is Act.HotspotA -> {
+            val now = rememberNow(1000)
+            CompactRow(h, gap, side * 1.4f,
+                left = { Icon(Ios.hotspot, null, tint = Tints.Green, modifier = Modifier.size(icon)) },
+                right = { TimeText(formatDuration(now - act.h.since), Tints.Green, 15) },
+            )
+        }
 
         is Act.ProgressA -> CompactRow(h, gap, side,
             left = { AppIcon(act.p.icon, h * 0.56f, Ios.download, Tints.Blue) },
