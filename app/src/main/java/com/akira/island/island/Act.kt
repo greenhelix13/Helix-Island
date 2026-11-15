@@ -22,6 +22,7 @@ sealed class Act(val id: String, val transient: Boolean = false) {
     data class TimerA(val t: TimerState) : Act("timer")
     data class StopwatchA(val w: StopwatchState) : Act("stopwatch")
     data class TorchA(val t: TorchState) : Act("torch")
+    data class HotspotA(val h: HotspotState) : Act("hotspot")
     data class ChronoA(val c: ChronoInfo) : Act("chrono") {
         override val pkg: String get() = c.pkg
     }
