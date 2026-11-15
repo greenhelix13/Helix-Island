@@ -12,6 +12,7 @@ import androidx.compose.material.icons.rounded.KeyboardVoice
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.Navigation
 import androidx.compose.material.icons.rounded.OfflineBolt
+import androidx.compose.material.icons.rounded.WifiTethering
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
