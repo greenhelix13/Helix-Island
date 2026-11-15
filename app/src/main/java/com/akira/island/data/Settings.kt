@@ -107,6 +107,7 @@ data class IslandSettings(
     // Динамические карточки
     val cardMedia: Boolean = true,
     val cardTorch: Boolean = true,
+    val cardHotspot: Boolean = true,
     val cardProgress: Boolean = true,
     val cardTimer: Boolean = true,
     val cardCharging: Boolean = true,
