@@ -359,7 +359,8 @@ class SystemEvents(private val context: Context) {
         // Скрытые, но давно стабильные широковещательные сообщения системы
         const val BT_BATTERY_CHANGED = "android.bluetooth.device.action.BATTERY_LEVEL_CHANGED"
         const val EXTRA_BT_BATTERY = "android.bluetooth.device.extra.BATTERY_LEVEL"
-        const val USB_STATE = "android.hardware.usb.action.USB_STATE"
-        const val AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED" 
+        const val USB_STATE = "android.hardware.usb.action.USB_STAT
+        const val AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED"
+        const val TETHER_STATE_CHANGED = "android.net.conn.TETHER_STATE_CHANGED"
     }
 }
