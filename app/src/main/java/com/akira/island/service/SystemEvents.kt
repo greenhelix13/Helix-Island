@@ -275,24 +275,21 @@ class SystemEvents(private val context: Context) {
                         if (on) Tints.Purple else Tints.Gray),
                 )
             }
-                          AP_STATE_CHANGED -> {
+                                      AP_STATE_CHANGED -> {
                 // Состояния точки доступа: 11 — выключена, 13 — включена (на старых версиях 1 и 3), остальные переходные
                 val state = intent.getIntExtra("wifi_state", 0) % 10
-                val wasOn = IslandBus.hotspot.value.on
-                if (state == 3 && !wasOn) {
-                    IslandBus.hotspot.value = HotspotState(true, SystemClock.elapsedRealtime())
-                    notice(
-                        s.cardHotspot,
-                        Notice(tr("Точка доступа", "Hotspot"), tr("Вкл", "On"), ic(R.drawable.ios_hotspot), Tints.Green, glow = true),
-                    )
-                } else if (state == 1 && wasOn) {
-                    IslandBus.hotspot.value = HotspotState()
-                    notice(
-                        s.cardHotspot,
-                        Notice(tr("Точка доступа", "Hotspot"), tr("Выкл", "Off"), ic(R.drawable.ios_hotspot), Tints.Gray),
-                    )
-                }
-                          }
+                Log.d("HotspotDbg", "AP_STATE_CHANGED state=$state")
+                if (state == 3) apOn = true else if (state == 1) apOn = false
+                refreshHotspot()
+            }
+
+            TETHER_STATE_CHANGED -> {
+                val active = (intent.getStringArrayListExtra("tetherArray") ?: arrayListOf()) +
+                    (intent.getStringArrayListExtra("localOnlyArray") ?: arrayListOf())
+                Log.d("HotspotDbg", "TETHER_STATE_CHANGED active=$active")
+                tetherOn = active.any { isWifiTetherName(it) }
+                refreshHotspot()
+            }
             Intent.ACTION_AIRPLANE_MODE_CHANGED -> {
                 val on = intent.getBooleanExtra("state", false)
                 if (on) notice(s.evAirplaneOn, Notice(tr("Режим полёта", "Airplane Mode"), tr("Вкл", "On"), ic(R.drawable.ios_airplane), Tints.Orange))
@@ -421,7 +418,7 @@ class SystemEvents(private val context: Context) {
         // Скрытые, но давно стабильные широковещательные сообщения системы
         const val BT_BATTERY_CHANGED = "android.bluetooth.device.action.BATTERY_LEVEL_CHANGED"
         const val EXTRA_BT_BATTERY = "android.bluetooth.device.extra.BATTERY_LEVEL"
-        const val USB_STATE = "android.hardware.usb.action.USB_STAT
+        const val USB_STATE = "android.hardware.usb.action.USB_STATE"
         const val AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED"
         const val TETHER_STATE_CHANGED = "android.net.conn.TETHER_STATE_CHANGED"
     }
