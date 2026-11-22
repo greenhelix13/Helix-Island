@@ -231,7 +231,7 @@ fun IslandOverlay(
         if (t != null && t.ringing) persistent += Act.TimerA(t)
         // Оплата телефоном — пока ждём терминал, она главнее остального
         payReady?.let { persistent += Act.PayA(it) }
-        if (call != null && !call.incoming) persistent += Act.CallA(call)
+        if (call != null && !call.incoming && !(s.hideWhenPlayerOpen && call.pkg == foreground)) persistent += Act.CallA(call)
         if (torch.on && s.cardTorch) persistent += Act.TorchA(torch)
         if (t != null && !t.ringing) persistent += Act.TimerA(t)
         if (s.cardLive) liveActive.filter { !s.hideWhenPlayerOpen || it.pkg == ownPkg || it.pkg != foreground }.maxByOrNull { it.postTime }?.let { persistent += Act.LiveA(it) }
@@ -244,8 +244,7 @@ fun IslandOverlay(
         if (s.cardHotspot && hotspot.on) persistent += Act.HotspotA(hotspot)
         // Будильник — тише всех: показывается, только когда больше ничего нет, и не уходит в пузырь
         val alarm = nextAlarm
-        if (s.cardAlarm && alarm != null && alarm.triggerAt - alarmNow in 1..ALARM_LEAD_MS) persistent += Act.AlarmA(alarm)
-
+        if (s.cardAlarm && alarm != null && alarm.triggerAt - alarmNow in 1..ALARM_LEAD_MS && !(s.hideWhenPlayerOpen && alarm.pkg != null && alarm.pkg == foreground)) persistent += Act.AlarmA(alarm)
         // Выбранная активность выходит вперёд, но звонящий таймер всегда главный
         val ringing = (persistent.firstOrNull() as? Act.TimerA)?.t?.ringing == true || call?.incoming == true
         val i = persistent.indexOfFirst { it.id == focus }
