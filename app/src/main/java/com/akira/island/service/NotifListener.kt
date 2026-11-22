@@ -42,6 +42,11 @@ class NotifListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+        // Плеер обновил своё медиа-уведомление, а карточки музыки нет — перечитываем сессии
+        val n = sbn.notification
+        if (IslandBus.media.value == null &&
+            (n.category == android.app.Notification.CATEGORY_TRANSPORT || n.extras.containsKey("android.mediaSession"))
+        ) media?.resync()
         NotificationParser.onPosted(this, sbn)
     }
 
