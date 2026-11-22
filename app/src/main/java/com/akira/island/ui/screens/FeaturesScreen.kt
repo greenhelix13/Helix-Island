@@ -175,7 +175,7 @@ fun BehaviorScreen(onBack: () -> Unit) {
                 tr("Не мешает играм и видео", "Stays out of games and videos"),
                 s.hideInLandscape, color = Tile.Gray) { v -> SettingsRepo.update { copy(hideInLandscape = v) } }
             GroupToggle(Pos.Last, Icons.Rounded.Apps, tr("Прятать карточки в их приложении", "Hide cards in their own app"),
-                tr("Музыка, навигация, загрузки и таймеры не показываются, пока открыто само приложение", "Music, navigation, downloads and timers hide while their own app is open"),
+                tr("Музыка, навигация, загрузки и таймеры не показываются, пока открыто само приложение", "Music, navigation, downloads, ongoing calls and timers hide while their app is open"),
                 s.hideWhenPlayerOpen, color = Tile.Blue) { v -> SettingsRepo.update { copy(hideWhenPlayerOpen = v) } }
         }
 
