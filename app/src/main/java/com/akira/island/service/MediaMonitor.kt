@@ -100,6 +100,11 @@ class MediaMonitor(private val context: Context) {
         bound.forEach { (c, cb) -> runCatching { c.unregisterCallback(cb) } }
         bound.clear()
     }
+    
+    /** Перечитать активные сессии: плеер мог вернуться к жизни, не позвав слушателя */
+    fun resync() {
+        runCatching { bind(manager?.getActiveSessions(component).orEmpty()) }
+    }
 
     private fun isPlaying(c: MediaController): Boolean {
         val st = c.playbackState?.state
@@ -117,11 +122,13 @@ class MediaMonitor(private val context: Context) {
         val meta = chosen?.metadata
         val title = meta?.getString(MediaMetadata.METADATA_KEY_TITLE)
             ?: meta?.getString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE)
-        if (chosen == null || meta == null || title.isNullOrBlank()) {
+            if (chosen == null || meta == null || title.isNullOrBlank()) {
+            hideJob?.cancel()
+            hiddenKey = null
+            pendingHideKey = null
             publish(null)
             return
         }
-
         val artist = meta.getString(MediaMetadata.METADATA_KEY_ARTIST)
             ?: meta.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
             ?: meta.getString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE)
