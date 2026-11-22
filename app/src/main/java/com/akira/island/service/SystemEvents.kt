@@ -98,8 +98,10 @@ class SystemEvents(private val context: Context) {
 
     private val hotspotPoll = object : Runnable {
         override fun run() {
-            ifaceOn = scanHotspotInterface()
-            refreshHotspot()
+                   if (IslandBus.screenOn.value && s.cardHotspot) {
+                ifaceOn = scanHotspotInterface()
+                refreshHotspot()
+            }
             main.postDelayed(this, 4000)
         }
     }
